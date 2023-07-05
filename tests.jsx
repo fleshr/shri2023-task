@@ -172,11 +172,11 @@ function Scripts() {
   );
 }
 
-function Panel({ name, items, isActive }) {
+function Panel({ name, items, isActive, displayCount }) {
   const renderedRef = React.useRef(false);
   const ref = React.useRef();
   const [hasRightScroll, setHasRightScroll] = React.useState(false);
-  const [shown, setShown] = React.useState(0);
+  const [shown, setShown] = React.useState(displayCount);
 
   const handleListRender = (el) => {
     if (
@@ -186,7 +186,6 @@ function Panel({ name, items, isActive }) {
     ) {
       renderedRef.current = true;
       setHasRightScroll(true);
-      setShown(Math.ceil(el.offsetWidth / 215) + 4);
     }
   };
 
@@ -360,6 +359,7 @@ for (let i = 0; i < 6; ++i) {
 const TABS_KEYS = Object.keys(TABS);
 
 function Devices() {
+  const wrapperRef = React.useRef(null);
   const initedRef = React.useRef(false);
   const [activeTab, setActiveTab] = React.useState("");
 
@@ -412,14 +412,18 @@ function Devices() {
         </ul>
       </div>
 
-      <div className="section__panel-wrapper">
-        {TABS_KEYS.map((key) => (
-          <Panel
-            name={key}
-            items={TABS[key].items}
-            isActive={key === activeTab}
-          />
-        ))}
+      <div ref={wrapperRef} className="section__panel-wrapper">
+        {wrapperRef?.current &&
+          TABS_KEYS.map((key) => (
+            <Panel
+              displayCount={
+                Math.ceil(wrapperRef?.current?.offsetWidth / 215) + 4
+              }
+              name={key}
+              items={TABS[key].items}
+              isActive={key === activeTab}
+            />
+          ))}
       </div>
     </section>
   );
