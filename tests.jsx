@@ -420,11 +420,11 @@ function Devices() {
                 <Event key={index} {...item} onSize={onSize} />
               ))}
             </ul>
+            {hasRightScroll && (
+              <div className="section__arrow" onClick={onArrowCLick}></div>
+            )}
           </div>
         ))}
-        {hasRightScroll && (
-          <div className="section__arrow" onClick={onArrowCLick}></div>
-        )}
       </div>
     </section>
   );
