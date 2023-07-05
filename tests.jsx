@@ -398,7 +398,7 @@ function Devices() {
         {TABS_KEYS.map((key) => (
           <Panel
             name={key}
-            items={TABS[key].items}
+            items={TABS[key].items.slice(0, 256)}
             isActive={key === activeTab}
           />
         ))}
