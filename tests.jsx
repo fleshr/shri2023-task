@@ -173,16 +173,25 @@ function Scripts() {
 }
 
 function Panel({ name, items, isActive }) {
+  const renderedRef = React.useRef(false);
   const ref = React.useRef();
   const [hasRightScroll, setHasRightScroll] = React.useState(false);
+  const [shown, setShown] = React.useState(0);
 
   const handleListRender = (el) => {
-    if (el && el.scrollWidth > el.offsetWidth) {
+    if (
+      !renderedRef.current &&
+      el?.offsetWidth &&
+      items.length * 215 - 15 > el.offsetWidth
+    ) {
+      renderedRef.current = true;
       setHasRightScroll(true);
+      setShown(Math.ceil(el.offsetWidth / 215) + 2);
     }
   };
 
   const onArrowCLick = () => {
+    setShown((prev) => prev + 2);
     ref.current.scrollBy({ left: 400, behavior: "smooth" });
   };
 
@@ -196,7 +205,7 @@ function Panel({ name, items, isActive }) {
       aria-labelledby={`tab_${name}`}
     >
       <ul ref={handleListRender} className="section__panel-list">
-        {items.map((item, index) => (
+        {items.slice(0, shown).map((item, index) => (
           <Event key={index} {...item} />
         ))}
       </ul>
@@ -398,7 +407,7 @@ function Devices() {
         {TABS_KEYS.map((key) => (
           <Panel
             name={key}
-            items={TABS[key].items.slice(0, 256)}
+            items={TABS[key].items}
             isActive={key === activeTab}
           />
         ))}
