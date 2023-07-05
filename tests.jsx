@@ -186,17 +186,26 @@ function Panel({ name, items, isActive }) {
     ) {
       renderedRef.current = true;
       setHasRightScroll(true);
-      setShown(Math.ceil(el.offsetWidth / 215) + 2);
+      setShown(Math.ceil(el.offsetWidth / 215) + 4);
     }
   };
 
   const onArrowCLick = () => {
-    setShown((prev) => prev + 2);
+    // setShown((prev) => prev + 2);
     ref.current.scrollBy({ left: 400, behavior: "smooth" });
+  };
+
+  const handlePanelScroll = (e) => {
+    const beShownCount =
+      Math.ceil(
+        (e.currentTarget.scrollLeft + e.currentTarget.offsetWidth) / 215
+      ) + 4;
+    if (shown !== beShownCount) setShown(beShownCount);
   };
 
   return (
     <div
+      onScroll={handlePanelScroll}
       ref={ref}
       role="tabpanel"
       className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
