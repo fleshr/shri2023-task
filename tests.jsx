@@ -186,6 +186,41 @@ function Scripts() {
   );
 }
 
+function Panel({ name, items, isActive }) {
+  const ref = React.useRef();
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
+
+  const handleListRender = (el) => {
+    if (el && el.scrollWidth > el.offsetWidth) {
+      setHasRightScroll(true);
+    }
+  };
+
+  const onArrowCLick = () => {
+    ref.current.scrollBy({ left: 400, behavior: "smooth" });
+  };
+
+  return (
+    <div
+      ref={ref}
+      role="tabpanel"
+      className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
+      aria-hidden={isActive ? "false" : "true"}
+      id={`panel_${name}`}
+      aria-labelledby={`tab_${name}`}
+    >
+      <ul ref={handleListRender} className="section__panel-list">
+        {items.map((item, index) => (
+          <Event key={index} {...item} />
+        ))}
+      </ul>
+      {hasRightScroll && (
+        <div className="section__arrow" onClick={onArrowCLick}></div>
+      )}
+    </div>
+  );
+}
+
 const TABS = {
   all: {
     title: "Все",
@@ -321,13 +356,11 @@ for (let i = 0; i < 6; ++i) {
 const TABS_KEYS = Object.keys(TABS);
 
 function Devices() {
-  const ref = React.useRef();
   const initedRef = React.useRef(false);
   const [activeTab, setActiveTab] = React.useState("");
-  const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
   React.useEffect(() => {
-    if (!activeTab && !initedRef.current && ref) {
+    if (!activeTab && !initedRef.current) {
       initedRef.current = true;
       setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
@@ -335,33 +368,6 @@ function Devices() {
 
   const onSelectInput = (event) => {
     setActiveTab(event.target.value);
-  };
-
-  let sizes = [];
-  const onSize = (size) => {
-    sizes.push(size);
-  };
-
-  React.useEffect(() => {
-    const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
-    // const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
-
-    const newHasRightScroll = sumWidth > ref.current.offsetWidth;
-    if (newHasRightScroll !== hasRightScroll) {
-      setHasRightScroll(newHasRightScroll);
-    }
-  });
-
-  const onArrowCLick = () => {
-    const scroller = ref.current.querySelector(
-      ".section__panel:not(.section__panel_hidden)"
-    );
-    if (scroller) {
-      scroller.scrollTo({
-        left: scroller.scrollLeft + 400,
-        behavior: "smooth",
-      });
-    }
   };
 
   return (
@@ -402,28 +408,13 @@ function Devices() {
         </ul>
       </div>
 
-      <div className="section__panel-wrapper" ref={ref}>
+      <div className="section__panel-wrapper">
         {TABS_KEYS.map((key) => (
-          <div
-            key={key}
-            role="tabpanel"
-            className={
-              "section__panel" +
-              (key === activeTab ? "" : " section__panel_hidden")
-            }
-            aria-hidden={key === activeTab ? "false" : "true"}
-            id={`panel_${key}`}
-            aria-labelledby={`tab_${key}`}
-          >
-            <ul className="section__panel-list">
-              {TABS[key].items.map((item, index) => (
-                <Event key={index} {...item} onSize={onSize} />
-              ))}
-            </ul>
-            {hasRightScroll && (
-              <div className="section__arrow" onClick={onArrowCLick}></div>
-            )}
-          </div>
+          <Panel
+            name={key}
+            items={TABS[key].items}
+            isActive={key === activeTab}
+          />
         ))}
       </div>
     </section>
