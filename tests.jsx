@@ -53,10 +53,13 @@ function Header() {
   );
 }
 
-function Event({ slim, icon, iconLabel, title, subtitle }) {
+function Event({ slim, icon, iconLabel, title, subtitle, fixedSize }) {
   return (
     <li className={"event" + (slim ? " event_slim" : "")}>
-      <button className="event__button">
+      <button
+        className="event__button"
+        style={{ width: fixedSize ? "200px" : "100%" }}
+      >
         <span
           className={`event__icon event__icon_${icon}`}
           role="img"
@@ -207,14 +210,21 @@ function Panel({ name, items, isActive, displayCount }) {
       onScroll={handlePanelScroll}
       ref={ref}
       role="tabpanel"
+      // style={{ maxWidth: `${items.length * 215 - 15}px` }}
       className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
       aria-hidden={isActive ? "false" : "true"}
       id={`panel_${name}`}
       aria-labelledby={`tab_${name}`}
     >
-      <ul ref={handleListRender} className="section__panel-list">
+      <ul
+        style={{
+          width: hasRightScroll ? `${items.length * 215 - 15}px` : "100%",
+        }}
+        ref={handleListRender}
+        className="section__panel-list"
+      >
         {items.slice(0, shown).map((item, index) => (
-          <Event key={index} {...item} />
+          <Event key={index} {...item} fixedSize={hasRightScroll} />
         ))}
       </ul>
       {hasRightScroll && (
