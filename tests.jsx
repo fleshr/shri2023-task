@@ -179,7 +179,7 @@ function Panel({ name, items, isActive }) {
   const renderedRef = React.useRef(false);
   const ref = React.useRef();
   const [hasRightScroll, setHasRightScroll] = React.useState(false);
-  const [shown, setShown] = React.useState(50);
+  const [shown, setShown] = React.useState(512);
 
   const handleListRender = (el) => {
     if (
