@@ -175,11 +175,11 @@ function Scripts() {
   );
 }
 
-function Panel({ name, items, isActive, displayCount }) {
+function Panel({ name, items, isActive }) {
   const renderedRef = React.useRef(false);
   const ref = React.useRef();
   const [hasRightScroll, setHasRightScroll] = React.useState(false);
-  const [shown, setShown] = React.useState(displayCount);
+  const [shown, setShown] = React.useState(50);
 
   const handleListRender = (el) => {
     if (
@@ -193,16 +193,15 @@ function Panel({ name, items, isActive, displayCount }) {
   };
 
   const onArrowCLick = () => {
-    // setShown((prev) => prev + 2);
     ref.current.scrollBy({ left: 400, behavior: "smooth" });
   };
 
   const handlePanelScroll = (e) => {
     const beShownCount =
       Math.ceil(
-        (e.currentTarget.scrollLeft + e.currentTarget.offsetWidth) / 215
-      ) + 4;
-    if (shown !== beShownCount) setShown(beShownCount);
+        (e.currentTarget.scrollLeft + e.currentTarget.offsetWidth + 15) / 215
+      ) + 10;
+    if (beShownCount > shown) setShown(beShownCount);
   };
 
   return (
@@ -210,7 +209,6 @@ function Panel({ name, items, isActive, displayCount }) {
       onScroll={handlePanelScroll}
       ref={ref}
       role="tabpanel"
-      // style={{ maxWidth: `${items.length * 215 - 15}px` }}
       className={"section__panel" + (isActive ? "" : " section__panel_hidden")}
       aria-hidden={isActive ? "false" : "true"}
       id={`panel_${name}`}
@@ -369,7 +367,6 @@ for (let i = 0; i < 6; ++i) {
 const TABS_KEYS = Object.keys(TABS);
 
 function Devices() {
-  const wrapperRef = React.useRef(null);
   const initedRef = React.useRef(false);
   const [activeTab, setActiveTab] = React.useState("");
 
@@ -422,18 +419,14 @@ function Devices() {
         </ul>
       </div>
 
-      <div ref={wrapperRef} className="section__panel-wrapper">
-        {wrapperRef?.current &&
-          TABS_KEYS.map((key) => (
-            <Panel
-              displayCount={
-                Math.ceil(wrapperRef?.current?.offsetWidth / 215) + 4
-              }
-              name={key}
-              items={TABS[key].items}
-              isActive={key === activeTab}
-            />
-          ))}
+      <div className="section__panel-wrapper">
+        {TABS_KEYS.map((key) => (
+          <Panel
+            name={key}
+            items={TABS[key].items}
+            isActive={key === activeTab}
+          />
+        ))}
       </div>
     </section>
   );
